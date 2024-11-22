@@ -128,7 +128,7 @@ async function addData(newData){
     }
 }
 
-app.post("/api/data", async (req,res)=>{ 
+app.post("/api", async (req,res)=>{ 
 
     try {
         const productData = await addData(req.body)
@@ -197,7 +197,7 @@ async function findAllData(){
     }
 }
 
-app.get("/api/data", async (req, res)=>{
+app.get("/api", async (req, res)=>{
     try {
         const productData = await findAllData()
         if(productData.length != 0){
@@ -265,7 +265,7 @@ async function deleteData(dataId){
     }
 }
 
-app.delete("/api/data/:dataId", async (req,res)=>{
+app.delete("/api:dataId", async (req,res)=>{
     try {
         const deletedData = await deleteData(req.params.dataId)
         if(deletedData){
