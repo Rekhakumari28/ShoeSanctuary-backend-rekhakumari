@@ -14,7 +14,6 @@ const {initializeDatabase} = require('./db/db.connection')
 
 //import models
 const Product = require('./models/product.model')
-const Data = require("./models/data.model")
 const Category = require("./models/category.model") 
 
 app.use(express.json())
@@ -117,29 +116,6 @@ app.get("/api/categories", async (req, res)=>{
     }
 })
 
-//add productData in Data
-async function addData(newData){
-    try {
-        const productData = new Data(newData)        
-        const savedData = await productData.save()
-        return savedData
-    } catch (error) {
-        console.log(error)
-    }
-}
-
-app.post("/api", async (req,res)=>{ 
-
-    try {
-        const productData = await addData(req.body)
-        res.status(201).json({message: "Data added successfully.", data:productData})
-    }catch(error){
-        res.status(500).json({error: "Failed to add data."})
-        
-    }
-})
-
-
 
 //find products by id
 async function findProductById(productId){
@@ -187,28 +163,6 @@ app.get("/api/categories/:categoryId", async (req, res)=>{
     }
 })
 
-//find all Data
-async function findAllData(){
-    try {
-        const productData = await Data.find().populate("author")
-        return productData
-    } catch (error) {
-        console.log(error)
-    }
-}
-
-app.get("/api", async (req, res)=>{
-    try {
-        const productData = await findAllData()
-        if(productData.length != 0){
-            res.json(productData)
-        }else{
-            res.status(404).json({error: "No data found."})
-        }
-    } catch (error) {
-        res.status(500).json({error: "Failed to fetch data."})
-    }
-})
 
 //delete product
 async function deleteProduct(productId){
@@ -255,28 +209,6 @@ app.delete("/api/categories/:categoryId", async (req,res)=>{
     }
 })
 
-//delete data
-async function deleteData(dataId){
-    try {
-        const deletedData = await Data.findByIdAndDelete(dataId) 
-        return deletedData
-    } catch (error) {
-       console.log(error) 
-    }
-}
-
-app.delete("/api:dataId", async (req,res)=>{
-    try {
-        const deletedData = await deleteData(req.params.dataId)
-        if(deletedData){
-            res.status(200).json({message: "Data Deleted Successfully."})
-        }else{
-            res.status(404).json({error: "Data not found"})
-        }
-    } catch (error) {
-        res.status(500).json({error: "Failed to delete data."})
-    }
-})
 
 const PORT = 3000
 
