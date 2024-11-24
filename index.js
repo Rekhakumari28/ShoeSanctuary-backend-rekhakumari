@@ -143,7 +143,7 @@ app.get("/api/products/:productId", async (req, res)=>{
 //find categories by id
 async function findCategoryById(categoryId){
     try {
-        const category = await Category.findById(categoryId).populate("author")
+        const category = await Category.findById(categoryId)
         return category
     } catch (error) {
         console.log(error)
