@@ -1,6 +1,4 @@
-{
-    "data":{
-        "products":[
+[
             {
                 "title": "Men Round Toe Sneakers",
                 "price": 1770,
@@ -113,5 +111,4 @@
                 "description": "Comfort:- Kat's Footwear Is Made With Premium Grade, Non-toxic Materials. Foam Insoles & Cushions Provide A Comfortable Fit, While Padded Heels Absorb Shock. From Day One, Our Mantra-comfort, Quality And Style Has Been The Same. Quality:-unsurpassed Quality And Craftsmanship Have Earned Kat's Footwear A Loyal Following. Premium Grade Mesh, Distinctive Styling And Remarkable Attention To Detail Have Resulted In Truly Exceptional Shoes. Led Light Kids Shoes."
             }
         ]
-    }
-}
+    

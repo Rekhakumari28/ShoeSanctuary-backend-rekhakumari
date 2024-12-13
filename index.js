@@ -15,7 +15,8 @@ const {initializeDatabase} = require('./db/db.connection')
 //import models
 const Product = require('./models/product.model')
 const Category = require("./models/category.model") 
-
+const Cart = require('./models/cart.model')
+const User = require('./models/user.model')
 app.use(express.json())
 
 initializeDatabase();
@@ -46,10 +47,33 @@ app.post("/api/products", async (req,res)=>{
     }
 })
 
+//find products by id
+async function findProductById(productId){
+    try {
+        const products = await Product.findById(productId).populate("author")
+        return products
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+app.get("/api/products/:productId", async (req, res)=>{
+    try {
+        const products = await findProductById(req.params.productId)
+        if(products.length != 0){
+            res.json(products)
+        }else{
+            res.status(404).json({error: "No product found."})
+        }
+    } catch (error) {
+        res.status(500).json({error: "Failed to fetch products."})
+    }
+})
+
 //find all products
 async function findAllProducts(){
     try {
-        const products = await Product.find().populate("author")
+        const products = await Product.find().populate("author")        
         return products
     } catch (error) {
         console.log(error)
@@ -68,7 +92,28 @@ app.get("/api/products", async (req, res)=>{
         res.status(500).json({error: "Failed to fetch products."})
     }
 })
+//delete product
+async function deleteProduct(productId){
+    try {
+        const deletedProduct = await Product.findByIdAndDelete(productId) 
+        return deletedProduct
+    } catch (error) {
+       console.log(error) 
+    }
+}
 
+app.delete("/api/products/:productId", async (req,res)=>{
+    try {
+        const deletedProduct = await deleteProduct(req.params.productId)
+        if(deletedProduct){
+            res.status(200).json({message: "Product Deleted Successfully."})
+        }else{
+            res.status(404).json({error: "Product not found"})
+        }
+    } catch (error) {
+        res.status(500).json({error: "Failed to delete Product."})
+    }
+})
 
 //add category
 
@@ -90,6 +135,28 @@ app.post("/api/categories", async (req,res)=>{
     }catch(error){
         res.status(500).json({error: "Failed to add category."})
         
+    }
+})
+//find categories by id
+async function findCategoryById(categoryId){
+    try {
+        const category = await Category.findById(categoryId)
+        return category
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+app.get("/api/categories/:categoryId", async (req, res)=>{
+    try {
+        const category = await findCategoryById(req.params.categoryId)
+        if(category.length != 0){
+            res.json(category)
+        }else{
+            res.status(404).json({error: "No category found."})
+        }
+    } catch (error) {
+        res.status(500).json({error: "Failed to fetch category."})
     }
 })
 
@@ -115,77 +182,6 @@ app.get("/api/categories", async (req, res)=>{
         res.status(500).json({error: "Failed to fetch category."})
     }
 })
-
-
-//find products by id
-async function findProductById(productId){
-    try {
-        const products = await Product.findById(productId).populate("author")
-        return products
-    } catch (error) {
-        console.log(error)
-    }
-}
-
-app.get("/api/products/:productId", async (req, res)=>{
-    try {
-        const products = await findProductById(req.params.productId)
-        if(products.length != 0){
-            res.json(products)
-        }else{
-            res.status(404).json({error: "No product found."})
-        }
-    } catch (error) {
-        res.status(500).json({error: "Failed to fetch products."})
-    }
-})
-
-//find categories by id
-async function findCategoryById(categoryId){
-    try {
-        const category = await Category.findById(categoryId)
-        return category
-    } catch (error) {
-        console.log(error)
-    }
-}
-
-app.get("/api/categories/:categoryId", async (req, res)=>{
-    try {
-        const category = await findCategoryById(req.params.categoryId)
-        if(category.length != 0){
-            res.json(category)
-        }else{
-            res.status(404).json({error: "No category found."})
-        }
-    } catch (error) {
-        res.status(500).json({error: "Failed to fetch category."})
-    }
-})
-
-
-//delete product
-async function deleteProduct(productId){
-    try {
-        const deletedProduct = await Product.findByIdAndDelete(productId) 
-        return deletedProduct
-    } catch (error) {
-       console.log(error) 
-    }
-}
-
-app.delete("/api/products/:productId", async (req,res)=>{
-    try {
-        const deletedProduct = await deleteProduct(req.params.productId)
-        if(deletedProduct){
-            res.status(200).json({message: "Product Deleted Successfully."})
-        }else{
-            res.status(404).json({error: "Product not found"})
-        }
-    } catch (error) {
-        res.status(500).json({error: "Failed to delete Product."})
-    }
-})
 //delete category
 async function deleteCategory(categoryId){
     try {
@@ -208,6 +204,119 @@ app.delete("/api/categories/:categoryId", async (req,res)=>{
         res.status(500).json({error: "Failed to delete Category."})
     }
 })
+
+//add Data
+async function createCart(newCart){
+    try {
+        const cart = new Cart(newCart)
+        const savedCart = await cart.save()
+        return savedCart
+    } catch (error) {
+    console.log(error)        
+    }
+}
+
+app.post('/api/cart', async(req, res)=>{
+    try {
+        const cart = new createCart(req.body)
+        res.json(cart)
+    } catch (error) {
+        res.status(500).json({error: "cart not created."})
+    }
+})
+
+//find all data
+async function findAllCart(){
+    try {
+        const cart = await Cart.find().populate("User").populate("Product").then((cart) => {
+            console.log('cart:', cart);
+        })
+        .catch((err) => {
+            console.error('Error:', err);
+        })
+        return cart
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+app.get("/api/cart", async(req,res)=>{
+    try {
+        const cart = await findAllCart()
+        if(cart.length != 0){
+            res.json(cart)
+        }else{
+            res.status(404).json({error: "No cart found."})
+        }
+    } catch (error) {
+        res.status(500).json({error: "Failed to fetch cart."})
+    }
+})
+
+//delete cart
+async function deleteCart(cartId){
+    try {
+        const deletedCart = await Cart.findByIdAndDelete(cartId) 
+        return deletedCart
+    } catch (error) {
+       console.log(error) 
+    }
+}
+
+app.delete("/api/cart/:cartId", async (req,res)=>{
+    try {
+        const deletedCart = await deleteCart(req.params.cartId)
+        if(deletedCart){
+            res.status(200).json({message: "cart Deleted Successfully."})
+        }else{
+            res.status(404).json({error: "cart not found"})
+        }
+    } catch (error) {
+        res.status(500).json({error: "Failed to delete cart."})
+    }
+})
+
+//add user
+async function createUser(newUser){
+    try {
+        const user = new User(newUser)
+        const savedUser = await user.save()
+        return savedUser
+    } catch (error) {
+    console.log(error)        
+    }
+}
+
+app.post('/api/user', async(req, res)=>{
+    try {
+        const user = new createUser(req.body)
+        res.json(user)  
+    } catch (error) {
+        res.status(500).json({error: "user not created."})
+    }
+})
+//find all user
+async function findAllUser(){
+    try {
+        const user = await User.find()
+        return user
+    } catch (error) {
+        console.log(error)
+    }
+}
+app.get("/api/user", async(req,res)=>{
+    try {
+        const user = await findAllUser()
+        if(user.length != 0){
+            res.json(user)
+        }else{
+            res.status(404).json({error: "No user found."})
+        }
+    } catch (error) {
+        res.status(500).json({error: "Failed to fetch user."})
+    }
+})
+
 
 
 const PORT = 3000

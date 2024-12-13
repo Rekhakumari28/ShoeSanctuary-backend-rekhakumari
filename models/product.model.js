@@ -25,13 +25,18 @@ const ProductSchema = new mongoose.Schema({
           author: {
             type: mongoose.Schema.Types.ObjectId ,
             ref: "Category"
-            },            
-          discount :String,
-          shorDetail: String,
-          description: String,        
-      }
-
-,{ timestamps: true } )
+            },                
+          discount : {
+            type: String
+          },
+          shorDetail:  {
+            type: String
+          },
+          description:  {
+            type: String
+          }, 
+      
+ },{ timestamps: true } )
 
 const Product = mongoose.model("Product", ProductSchema)
 module.exports = Product

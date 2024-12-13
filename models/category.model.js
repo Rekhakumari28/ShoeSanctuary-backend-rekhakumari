@@ -4,7 +4,7 @@ const categorySchema = new mongoose.Schema({
     category: {
         type: String,
         required : true,
-        enum : ["Men", "Women", "Girls", "Boys"]
+        enum : ["Men", "Women", "Girls", "Boys"],       
       }
 },{timestamp: true})
 
