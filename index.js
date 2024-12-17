@@ -331,7 +331,7 @@ async function addAddress(newAddress){
     }
 }
 
-app.post("/api/address", async (req,res)=>{ 
+app.post("/api/addresses", async (req,res)=>{ 
 
     try {
         const address = await addAddress(req.body)
@@ -364,7 +364,6 @@ app.delete("/api/Address/:addressId", async (req,res)=>{
         res.status(500).json({error: "Failed to delete Address."})
     }
 })
-
 
 const PORT = 3000
 
