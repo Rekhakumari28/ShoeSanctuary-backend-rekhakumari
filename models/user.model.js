@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
         type:String,
         require: true
     },   
-    
+    Address:[{ type: mongoose.Schema.Types.ObjectId, ref: "Address"}]
     
 },{timestamp: true})
 

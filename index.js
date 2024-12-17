@@ -17,6 +17,9 @@ const Product = require('./models/product.model')
 const Category = require("./models/category.model") 
 const Cart = require('./models/cart.model')
 const User = require('./models/user.model')
+const Address = require('./models/address.model')
+
+
 app.use(express.json())
 
 initializeDatabase();
@@ -317,6 +320,50 @@ app.get("/api/user", async(req,res)=>{
     }
 })
 
+//add address
+async function addAddress(newAddress){
+    try {
+        const address = new Address(newAddress)        
+        const savedAddress = await address.save()
+        return savedAddress
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+app.post("/api/address", async (req,res)=>{ 
+
+    try {
+        const address = await addAddress(req.body)
+        res.status(201).json({message: "address added successfully.", address: address})
+    }catch(error){
+        res.status(500).json({error: "Failed to add address."})
+        
+    }
+})
+
+//delete address
+async function deleteAddress(addressId){
+    try {
+        const deletedAddress = await Address.findByIdAndDelete(addressId) 
+        return deletedAddress
+    } catch (error) {
+       console.log(error) 
+    }
+}
+
+app.delete("/api/Address/:addressId", async (req,res)=>{
+    try {
+        const deletedAddress = await deleteAddress(req.params.addressId)
+        if(deletedAddress){
+            res.status(200).json({message: "Address Deleted Successfully."})
+        }else{
+            res.status(404).json({error: "Address not found"})
+        }
+    } catch (error) {
+        res.status(500).json({error: "Failed to delete Address."})
+    }
+})
 
 
 const PORT = 3000
