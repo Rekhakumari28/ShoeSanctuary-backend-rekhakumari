@@ -342,6 +342,30 @@ app.post("/api/addresses", async (req,res)=>{
     }
 })
 
+// find all addresses
+
+async function findAllAddress(){
+    try {
+        const address = await Address.find()
+        return address
+    } catch (error) {
+        console.log(error)
+    }
+}
+app.get("/api/addresses", async(req,res)=>{
+    try {
+        const address = await findAllAddress()
+        if(address.length != 0){
+            res.json(address)
+        }else{
+            res.status(404).json({error: "No address found."})
+        }
+    } catch (error) {
+        res.status(500).json({error: "Failed to fetch address."})
+    }
+})
+
+
 //delete address
 async function deleteAddress(addressId){
     try {
