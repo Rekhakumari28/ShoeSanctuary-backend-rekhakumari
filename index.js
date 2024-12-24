@@ -32,7 +32,7 @@ const cartRouter = require('./Routers/cartRoutes')
 //  routes
 app.use('/api/products' , productRouter)
 app.use('/api/categories', categoryRouter)
-app.use('/api/orders/orderItems', orderItemRouter)
+app.use('/api/orderItems', orderItemRouter)
 app.use('/api/addresses',addressRouter)
 app.use('/api/wishlists',wishlistRouter)
 app.use('/api/users',userRouter)

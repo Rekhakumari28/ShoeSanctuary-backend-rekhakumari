@@ -45,6 +45,32 @@ const getOrderItem = asyncHandler( async(req,res)=>{
     }
 })
 
+//get all items
+
+//find all products
+async function findAllOrderItem(){
+    try {
+        const orderItem = await OrderItem.find().populate("product")        
+        return orderItem
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+const getProducts = asyncHandler(async (req, res)=>{
+    try {
+        const orderItem = await findAllOrderItem()
+        if(orderItem.length != 0){
+            res.json(orderItem)
+        }else{
+            res.status(404).json({error: "No orderItem found."})
+        }
+    } catch (error) {
+        res.status(500).json({error: "Failed to fetch orderItem."})
+    }
+})
+
+
 //delete orderItem
 async function deleteOrderItemById(orderId){
     try {
@@ -70,4 +96,4 @@ const deleteOrderItem = asyncHandler( async(req,res)=>{
 })
 
 
-module.exports = {addOrderItem, getOrderItem, deleteOrderItem}
+module.exports = {addOrderItem, getOrderItem, getProducts, deleteOrderItem}
