@@ -1,30 +1,31 @@
 const mongoose = require('mongoose')
 
 const cartSchema = new mongoose.Schema({
-    User: {
-            type: mongoose.Schema.Types.ObjectId ,
-            ref: "User"
-               },
-    Product:[{
-            Product: [{
-            type: mongoose.Schema.ObjectId,
-            ref: "Product"
-             }],
-       
-            quantity:{
-            type: Number,
+   orderItem: [{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "OrderItem",
             required: true,
-            min :1,
-            default:1,       
-            },
-            price:Number
-    }],
-    bill:{
-        type: Number,
-        default: 0,
-    }   
+          }],
+   shippingAddress: { type: mongoose.Schema.Types.ObjectId, ref: "Address" },
+   status: { 
+      type: String,
+      enum:["Pending","Delivered","Canceled"],
+      default: "Pending"
+   },
+   totalPrice: {
+      type: Number,
+      required: true
+   },
+   user : {type: mongoose.Schema.Types.ObjectId, ref: "User"}
 
 },{timestamps: true})
 
 const Cart = mongoose.model("Cart", cartSchema)
 module.exports = Cart
+
+
+
+// orderItemsSchem { product, quantity }
+// inside orderSchema we can use orderItemsSchema like this
+// orderSchema{ orderItems: [orderItemsSchem] }
+//this is array of orderItemsSchem.

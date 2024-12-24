@@ -1,14 +1,15 @@
 const mongoose = require('mongoose')
 const addressSchema = new mongoose.Schema({
-    name:{
+    
+    address: {
         type: String,
         required: true
         },
-    street: {
+    city:{
         type: String,
         required: true
-        },
-    state:{
+        },   
+    postalCode:{
         type: String,
         required: true
         },
@@ -16,14 +17,7 @@ const addressSchema = new mongoose.Schema({
         type: String,
         required: true
         },
-    zipcode:{
-        type: Number,
-        required: true
-        },
-    mobileNo:{
-        type: String,
-        required: true
-        },
+    
 })
 
 const Address = mongoose.model("Address", addressSchema)
