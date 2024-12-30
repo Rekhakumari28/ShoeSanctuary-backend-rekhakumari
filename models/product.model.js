@@ -24,7 +24,7 @@ const ProductSchema = new mongoose.Schema(
         enum: ["XS", "S", "M", "L", "XL"],
       },
     ],
-    author: {
+    category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
     },

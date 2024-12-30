@@ -12,7 +12,15 @@ const userSchema = new mongoose.Schema({
     password: {
         type:String,
         require: true
-    }, 
+    },
+    phone:{
+        type:String,
+        require: true
+    } ,
+    isAdmin: {
+        type: Boolean,
+        default: false,
+    },
     address: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Address"
