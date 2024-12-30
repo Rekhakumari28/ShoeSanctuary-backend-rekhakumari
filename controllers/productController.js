@@ -29,7 +29,7 @@ const Product = require('../models/product.model')
 
 async function findProductById(productId){
     try {
-        const products = await Product.findById(productId).populate("author")
+        const products = await Product.findById(productId).populate("category")
         return products
     } catch (error) {
         console.log(error)
@@ -53,7 +53,7 @@ const getProductById = asyncHandler(async (req, res)=>{
 //find all products
 async function findAllProducts(){
     try {
-        const products = await Product.find().populate("author")        
+        const products = await Product.find().populate("category")        
         return products
     } catch (error) {
         console.log(error)
