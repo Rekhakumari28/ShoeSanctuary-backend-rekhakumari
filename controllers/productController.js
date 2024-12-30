@@ -4,26 +4,26 @@ const asyncHandler  = require('express-async-handler')
 const Product = require('../models/product.model')
 
  //add product
-// async function addProducts(newProduct){
-//     try {
-//         const product = new Product(newProduct)        
-//         const savedProduct = await product.save()
-//         return savedProduct
-//     } catch (error) {
-//         console.log(error)
-//     }
-// }
+async function addProducts(newProduct){
+    try {
+        const product = new Product(newProduct)        
+        const savedProduct = await product.save()
+        return savedProduct
+    } catch (error) {
+        console.log(error)
+    }
+}
+const addProduct = asyncHandler(async (req,res)=>{ 
 
-// router.post("/api/products", async (req,res)=>{ 
-
-//     try {
-//         const products = await addProducts(req.body)
-//         res.status(201).json({message: "Product added successfully.", product:products})
-//     }catch(error){
-//         res.status(500).json({error: "Failed to add product."})
+    try {
+        const products = await addProducts(req.body)
+        res.status(201).json({message: "Product added successfully.", product:products})
+    }catch(error){
+        res.status(500).json({error: "Failed to add product."})
         
-//     }
-// })
+    }
+})
+
 
 //find product by Id
 
@@ -73,27 +73,27 @@ const getProducts = asyncHandler(async (req, res)=>{
     }
 })
 
- //delete product
-// async function deleteProduct(productId){
-//     try {
-//         const deletedProduct = await Product.findByIdAndDelete(productId) 
-//         return deletedProduct
-//     } catch (error) {
-//        console.log(error) 
-//     }
-// }
+//  delete product
+async function deleteProduct(productId){
+    try {
+        const deletedProduct = await Product.findByIdAndDelete(productId) 
+        return deletedProduct
+    } catch (error) {
+       console.log(error) 
+    }
+}
+const deleteProduct = asyncHandler(async (req,res)=>{
+    try {
+        const deletedProduct = await deleteProduct(req.params.productId)
+        if(deletedProduct){
+            res.status(200).json({message: "Product Deleted Successfully."})
+        }else{
+            res.status(404).json({error: "Product not found"})
+        }
+    } catch (error) {
+        res.status(500).json({error: "Failed to delete Product."})
+    }
+})
 
-// router.delete("/api/products/:productId", async (req,res)=>{
-//     try {
-//         const deletedProduct = await deleteProduct(req.params.productId)
-//         if(deletedProduct){
-//             res.status(200).json({message: "Product Deleted Successfully."})
-//         }else{
-//             res.status(404).json({error: "Product not found"})
-//         }
-//     } catch (error) {
-//         res.status(500).json({error: "Failed to delete Product."})
-//     }
-// })
 
-module.exports = { getProductById, getProducts }
+module.exports = {addProduct, getProductById, getProducts, deleteProduct }
