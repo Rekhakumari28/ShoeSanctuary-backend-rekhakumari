@@ -70,6 +70,29 @@ const getProducts = asyncHandler(async (req, res)=>{
     }
 })
 
+//update order
+
+async function updateOrder (orderId, dataToUpdate){
+    try {
+        const orderItem = await OrderItem.findByIdAndUpdate(orderId, dataToUpdate, {new: true})
+        return orderItem
+    } catch (error) {
+        console.log("Error in updating orderItem",error)        
+    }
+}
+
+const updateOrderItemById = asyncHandler( async(req,res)=>{
+    try{
+        const orderItem = await updateOrder(req.params.orderId, req.body)
+        if(orderItem){
+             res.status(200).json({message:"Order updated successfully.", updateOrder: orderItem})
+        }else{
+            res.status(404).json({error: "OrderItem not found"})
+        }
+    }catch(error){
+        res.status(500).json({error: "Failed to update OrderItem."})
+    }
+})
 
 //delete orderItem
 async function deleteOrderItemById(orderId){
@@ -96,4 +119,4 @@ const deleteOrderItem = asyncHandler( async(req,res)=>{
 })
 
 
-module.exports = {addOrderItem, getOrderItem, getProducts, deleteOrderItem}
+module.exports = {addOrderItem, getOrderItem, getProducts,updateOrderItemById, deleteOrderItem}
