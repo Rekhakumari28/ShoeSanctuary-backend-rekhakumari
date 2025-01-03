@@ -27,7 +27,7 @@ const addNewUser = asyncHandler(async(req, res)=>{
 //find all user
 async function findAllUser(){
     try {
-        const user = await User.find().populate("address")
+        const user = await User.find()
         return user
     } catch (error) {
         console.log(error)
@@ -51,7 +51,7 @@ const getAllUser = asyncHandler(async(req,res)=>{
 
 async function findUserByEmail (email){
     try {
-        const user = await User.findOne({email: email}).populate("address")
+        const user = await User.findOne({email: email})
         return user
     } catch (error) {
         console.log("An error occured when finding user.", error)
