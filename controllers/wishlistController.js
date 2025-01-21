@@ -25,7 +25,7 @@ const addToWishlist = asyncHandler(async (req, res)=>{
 //get wishlist
 async function getWishlistProduct(){
     try {
-        const wishlist = await Wishlist.find().populate("product")
+        const wishlist = await Wishlist.find().populate("category")
         return wishlist
     } catch (error) {
         console.log("An error occured fetching products.")        

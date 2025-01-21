@@ -28,6 +28,7 @@ const addressRouter = require('./Routers/addressRoutes')
 const wishlistRouter = require('./Routers/wishlistRoutes')
 const userRouter = require('./Routers/userRoutes')
 const cartRouter = require('./Routers/cartRoutes')
+const loginRegisterRouter = require('./Routers/authRoutes')
 
 //  routes
 app.use('/api/products' , productRouter)
@@ -37,6 +38,7 @@ app.use('/api/addresses',addressRouter)
 app.use('/api/wishlists',wishlistRouter)
 app.use('/api/users',userRouter)
 app.use('/api/carts',cartRouter)
+app.use('/api', loginRegisterRouter)
 
 
 //post
