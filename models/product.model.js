@@ -29,11 +29,9 @@ const ProductSchema = new mongoose.Schema(
       ref: "Category",
     },
     discount: {
-      type: String,
+      type: Number,
     },
-    shorDetail: {
-      type: String,
-    },
+   
     description: {
       type: String,
     },
