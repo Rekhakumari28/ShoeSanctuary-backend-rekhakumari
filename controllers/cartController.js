@@ -50,7 +50,7 @@ const getAllCart = asyncHandler(async(req,res)=>{
 
 async function findCartByUser (user){
     try {
-        const cart = await Cart.findOne({user : user}).populate("orderItem").populate("shippingAddress").populate('user')
+        const cart = await Cart.findOne({user : user}).populate("orderItems").populate("shippingAddress").populate('user')
         return cart
     } catch (error) {
         console.log('An error occured finding user cart.', error)   
