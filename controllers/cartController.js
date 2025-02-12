@@ -26,7 +26,7 @@ const addToCart = asyncHandler(async(req, res)=>{
 //find all data
 async function findAllCart(){
     try {
-        const cart = await Cart.find().populate("orderItem").populate("shippingAddress").populate('user')
+        const cart = await Cart.find().populate("orderItems").populate("shippingAddress").populate('user')
         return cart
     } catch (error) {
         console.log(error)
