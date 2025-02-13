@@ -23,6 +23,7 @@ const addToCart = asyncHandler(async(req, res)=>{
     }
 })
 
+
 //find all data
 async function findAllCart(){
     try {
@@ -70,6 +71,30 @@ const getCartByUser = asyncHandler (async (req, res)=>{
     }
 })
 
+//update cart
+
+async function updateCart (cartId, dataToUpdate){
+    try {
+        const cart = await Cart.findByIdAndUpdate(cartId, dataToUpdate, {new: true})
+        return cart
+    } catch (error) {
+        console.log("Error in updating cart",error)        
+    }
+}
+
+const updatCartById = asyncHandler( async(req,res)=>{
+    try{
+        const cart = await updateCart(req.params.cartId, req.body)
+        if(cart){
+             res.status(200).json({message:"cart updated successfully.", cart: cart})
+        }else{
+            res.status(404).json({error: "cart not found"})
+        }
+    }catch(error){
+        res.status(500).json({error: "Failed to update cart."})
+    }
+})
+
 //delete cart
 async function deleteCart(cartId){
     try {
@@ -95,4 +120,4 @@ const removeCart = asyncHandler( async (req,res)=>{
 
 
 
-module.exports = {addToCart, getAllCart , getCartByUser, removeCart}
+module.exports = {addToCart, getAllCart , getCartByUser, removeCart, updatCartById}

@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const cartSchema = new mongoose.Schema(
+const orderHistorySchema = new mongoose.Schema(
   {
     orderItems: [
       {
@@ -34,5 +34,5 @@ const cartSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-const Cart = mongoose.model("Cart", cartSchema);
-module.exports = Cart;
+const OrderHistory = mongoose.model("OrderHistory", orderHistorySchema);
+module.exports = OrderHistory;

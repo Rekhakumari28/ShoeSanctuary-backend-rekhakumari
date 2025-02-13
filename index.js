@@ -29,6 +29,7 @@ const wishlistRouter = require('./Routers/wishlistRoutes')
 const userRouter = require('./Routers/userRoutes')
 const cartRouter = require('./Routers/cartRoutes')
 const loginRegisterRouter = require('./Routers/authRoutes')
+const orderHistoryRouter = require("./Routers/orderHistoryRoutes")
 
 //  routes
 app.use('/api/products' , productRouter)
@@ -39,7 +40,7 @@ app.use('/api/wishlists',wishlistRouter)
 app.use('/api/users',userRouter)
 app.use('/api/carts',cartRouter)
 app.use('/api', loginRegisterRouter)
-
+app.use("/api/cartHistory", orderHistoryRouter)
 
 //post
 const PORT = 3000
