@@ -27,10 +27,10 @@ const addToCartHistory = asyncHandler(async(req, res)=>{
 //find all data
 async function findAllCartHistory(){
     try {
-        const cartHistory = await OrderHistory.find().populate("orderItems").populate("shippingAddress").populate('user')
+        const cartHistory = await OrderHistory.find().populate("orderItems.product").populate("shippingAddress").populate('user')
         return cartHistory
     } catch (error) {
-        console.log(error)
+        console.log(error)  
     }
 }
 
@@ -49,9 +49,9 @@ const getAllCartHistory = asyncHandler(async(req,res)=>{
 
 //find by user
 
-async function findCartHistoryByUser (user){
+async function findCartHistoryByUser (email){
     try {
-        const cartHistory = await OrderHistory.findOne({user : user}).populate("orderItems").populate("shippingAddress").populate('user')
+        const cartHistory = await OrderHistory.findOne({email : email}).populate("orderItems.product").populate("shippingAddress").populate('user')
         return cartHistory
     } catch (error) {
         console.log('An error occured finding user cart History.', error)   

@@ -27,7 +27,7 @@ const addToCart = asyncHandler(async(req, res)=>{
 //find all data
 async function findAllCart(){
     try {
-        const cart = await Cart.find().populate("orderItems").populate("shippingAddress").populate('user')
+        const cart = await Cart.find().populate("orderItems.product").populate("shippingAddress").populate('user')
         return cart
     } catch (error) {
         console.log(error)
@@ -51,7 +51,7 @@ const getAllCart = asyncHandler(async(req,res)=>{
 
 async function findCartByUser (user){
     try {
-        const cart = await Cart.findOne({user : user}).populate("orderItems").populate("shippingAddress").populate('user')
+        const cart = await Cart.findOne({user : user}).populate("orderItems.product").populate("shippingAddress").populate('user')
         return cart
     } catch (error) {
         console.log('An error occured finding user cart.', error)   
@@ -117,7 +117,5 @@ const removeCart = asyncHandler( async (req,res)=>{
         res.status(500).json({error: "Failed to delete cart."})
     }
 })
-
-
 
 module.exports = {addToCart, getAllCart , getCartByUser, removeCart, updatCartById}

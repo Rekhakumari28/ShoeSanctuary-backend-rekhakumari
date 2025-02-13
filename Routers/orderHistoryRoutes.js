@@ -5,6 +5,6 @@ const {addToCartHistory, getAllCartHistory , getCartHistoryByUser} = require('..
 
 router.post("/", addToCartHistory)
 router.get("/", getAllCartHistory)
-router.get("/:user", getCartHistoryByUser)
+router.get("/:email", getCartHistoryByUser)
 
 module.exports = router
