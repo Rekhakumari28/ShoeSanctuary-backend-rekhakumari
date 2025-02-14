@@ -27,7 +27,8 @@ const addToCartHistory = asyncHandler(async(req, res)=>{
 //find all data
 async function findAllCartHistory(){
     try {
-        const cartHistory = await OrderHistory.find().populate("orderItems.product").populate("shippingAddress").populate('user')
+        const cartHistory = await OrderHistory.find().populate("orderItems.product").populate("shippingAddress").populate('user').exec()
+       
         return cartHistory
     } catch (error) {
         console.log(error)  
@@ -51,7 +52,8 @@ const getAllCartHistory = asyncHandler(async(req,res)=>{
 
 async function findCartHistoryByUser (email){
     try {
-        const cartHistory = await OrderHistory.findOne({email : email}).populate("orderItems.product").populate("shippingAddress").populate('user')
+        const cartHistory = await OrderHistory.findOne({email : email}).populate("orderItems.product" ).populate("shippingAddress").populate('user').exec()
+       
         return cartHistory
     } catch (error) {
         console.log('An error occured finding user cart History.', error)   
@@ -71,5 +73,27 @@ const getCartHistoryByUser = asyncHandler (async (req, res)=>{
     }
 })
 
+//delete cart History
+async function deleteCartHistory(cartHistoryId){
+    try {
+        const deletedCartHistory = await OrderHistory.findByIdAndDelete(cartHistoryId) 
+        return deletedCartHistory
+    } catch (error) {
+       console.log(error) 
+    }
+}
 
-module.exports = {addToCartHistory, getAllCartHistory , getCartHistoryByUser}
+const removeCartHistory = asyncHandler( async (req,res)=>{
+    try {
+        const deletedCartHistory = await deleteCartHistory(req.params.cartHistoryId)
+        if(deletedCartHistory){
+            res.status(200).json({message: "Cart History Deleted Successfully."})
+        }else{
+            res.status(404).json({error: "cart history not found"})
+        }
+    } catch (error) {
+        res.status(500).json({error: "Failed to delete cart history."})
+    }
+})
+
+module.exports = {addToCartHistory, getAllCartHistory , getCartHistoryByUser, removeCartHistory}
