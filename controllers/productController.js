@@ -73,6 +73,29 @@ const getProducts = asyncHandler(async (req, res)=>{
     }
 })
 
+//update product
+async function updateProduct (productId, dataToUpdate){
+    try {
+        const products = await Product.findByIdAndUpdate(productId, dataToUpdate, {new: true})
+        return products
+    } catch (error) {
+        console.log("Error in updating products",error)        
+    }
+}
+
+const updateProductItemById = asyncHandler( async(req,res)=>{
+    try{
+        const products = await updateProduct(req.params.productId, req.body)
+        if(products){
+             res.status(200).json({message:"products updated successfully.", products: products})
+        }else{
+            res.status(404).json({error: "products not found"})
+        }
+    }catch(error){
+        res.status(500).json({error: "Failed to update products."})
+    }
+})
+
 //  delete product
 async function deleteProducts(productId){
     try {
@@ -96,4 +119,4 @@ const deleteProduct = asyncHandler(async (req,res)=>{
 })
 
 
-module.exports = {addProduct, getProductById, getProducts, deleteProduct }
+module.exports = {addProduct, getProductById, getProducts, updateProductItemById, deleteProduct }
