@@ -22,6 +22,7 @@ const ProductSchema = new mongoose.Schema(
       {
         type: String,
         enum: ["XS", "S", "M", "L", "XL"],
+        default: "M"
       },
     
     category: {
