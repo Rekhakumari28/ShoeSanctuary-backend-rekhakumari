@@ -73,6 +73,32 @@ const getCartHistoryByUser = asyncHandler (async (req, res)=>{
     }
 })
 
+//find cart history by Id
+
+async function findCartHistoryById(cartHistoryId){
+    try {
+        const cartHistory = await OrderHistory.findById(cartHistoryId).populate("orderItems.product" ).populate("shippingAddress").populate('user').exec()
+        return cartHistory
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+const getCartHistoryById = asyncHandler(async (req, res)=>{
+    try {
+        const cartHistory = await findCartHistoryById(req.params.cartHistoryId)
+        if(cartHistory.length != 0){
+            res.json(cartHistory)
+        }else{
+            res.status(404).json({error: "No cart history found."})
+        }
+    } catch (error) {
+        res.status(500).json({error: "Failed to fetch cart history."})
+    }
+})
+
+
+
 //delete cart History
 async function deleteCartHistory(cartHistoryId){
     try {
@@ -96,4 +122,4 @@ const removeCartHistory = asyncHandler( async (req,res)=>{
     }
 })
 
-module.exports = {addToCartHistory, getAllCartHistory , getCartHistoryByUser, removeCartHistory}
+module.exports = {addToCartHistory, getAllCartHistory , getCartHistoryByUser, getCartHistoryById, removeCartHistory}

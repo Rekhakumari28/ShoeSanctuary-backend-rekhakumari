@@ -18,12 +18,12 @@ const ProductSchema = new mongoose.Schema(
       min: 0,
       max: 5,
     },
-    size: [
+    size: 
       {
         type: String,
         enum: ["XS", "S", "M", "L", "XL"],
       },
-    ],
+    
     category: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "Category",
