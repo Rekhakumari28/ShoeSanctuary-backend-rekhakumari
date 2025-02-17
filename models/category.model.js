@@ -5,6 +5,10 @@ const categorySchema = new mongoose.Schema({
         type: String,
         required : true,
         enum : ["Men", "Women", "Girls", "Boys"],       
+      },
+      product : {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product"
       }
 },{timestamp: true})
 

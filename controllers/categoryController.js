@@ -24,11 +24,34 @@ const Category = require("../models/category.model")
 //     }
 // })
 
+//update category
+async function updateCategory (categoryId, dataToUpdate){
+    try {
+        const category = await Category.findByIdAndUpdate(categoryId, dataToUpdate, {new: true}).populate('product')
+        return category
+    } catch (error) {
+        console.log("Error in updating category",error)        
+    }
+}
+
+const updateCategoryById = asyncHandler( async(req,res)=>{
+    try{
+        const category = await updateCategory(req.params.categoryId, req.body)
+        if(category){
+             res.status(200).json({message:"category updated successfully.", category: category})
+        }else{
+            res.status(404).json({error: "category not found"})
+        }
+    }catch(error){
+        res.status(500).json({error: "Failed to update categorys."})
+    }
+})
+
 
 //find categories by id
 async function findCategoryById(categoryId){
     try {
-        const category = await Category.findById(categoryId)
+        const category = await Category.findById(categoryId).populate('product')
         return category
     } catch (error) {
         console.log(error)
@@ -51,7 +74,7 @@ const getCategoryById = asyncHandler(async (req, res)=>{
 //find all categories
 async function findAllCategory(){
     try {
-        const categoryData = await Category.find()
+        const categoryData = await Category.find().populate('product')
         return categoryData
     } catch (error) {
         console.log(error)
@@ -94,4 +117,4 @@ const getCategory = asyncHandler(async (req, res)=>{
 //     }
 // })
 
-module.exports = {getCategory, getCategoryById}
+module.exports = {getCategory, updateCategoryById, getCategoryById}
