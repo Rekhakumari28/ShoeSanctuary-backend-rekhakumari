@@ -27,7 +27,7 @@ const Category = require("../models/category.model")
 //update category
 async function updateCategory (categoryId, dataToUpdate){
     try {
-        const category = await Category.findByIdAndUpdate(categoryId, dataToUpdate, {new: true}).populate('product')
+        const category = await Category.findByIdAndUpdate(categoryId, dataToUpdate, {new: true})
         return category
     } catch (error) {
         console.log("Error in updating category",error)        
@@ -51,7 +51,7 @@ const updateCategoryById = asyncHandler( async(req,res)=>{
 //find categories by id
 async function findCategoryById(categoryId){
     try {
-        const category = await Category.findById(categoryId).populate('product')
+        const category = await Category.findById(categoryId)
         return category
     } catch (error) {
         console.log(error)
@@ -74,7 +74,7 @@ const getCategoryById = asyncHandler(async (req, res)=>{
 //find all categories
 async function findAllCategory(){
     try {
-        const categoryData = await Category.find().populate('product')
+        const categoryData = await Category.find()
         return categoryData
     } catch (error) {
         console.log(error)

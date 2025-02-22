@@ -6,10 +6,7 @@ const categorySchema = new mongoose.Schema({
         required : true,
         enum : ["Men", "Women", "Girls", "Boys"],       
       },
-      product : {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Product"
-      }
+      
 },{timestamp: true})
 
 const Category = mongoose.model("Category",categorySchema)
