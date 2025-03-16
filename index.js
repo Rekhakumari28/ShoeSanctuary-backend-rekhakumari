@@ -42,7 +42,7 @@ app.use('/api/carts',cartRouter)
 app.use('/api', loginRegisterRouter)
 app.use("/api/cartHistory", orderHistoryRouter)
 
-//post
+//port
 const PORT = 3000
 app.listen(PORT,()=>{
     console.log('Server is running on port:', PORT)
