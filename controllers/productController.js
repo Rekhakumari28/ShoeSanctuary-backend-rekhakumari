@@ -1,29 +1,39 @@
 const asyncHandler  = require('express-async-handler')
 
 //import model
-const Product = require('../models/product.model')
+const Product = require('../models/product.model.js')
 
  //add product
-async function addProducts(newProduct){
+async function createProducts(products){
     try {
-        const product = new Product(newProduct)        
-        const savedProduct = await product.save()
-        return savedProduct
+        if(!Array.isArray(products)){
+            throw new TypeError("Produts should be an array.")
+        }
+
+       const updatedProducts = products.map((product)=>{
+        product.categoryId = product.categoryId.toString()
+        return product
+       })
+
+          const savedProducts = await Product.insertMany(updatedProducts);
+    return savedProducts;
+
     } catch (error) {
-        console.log(error)
+        console.error("Error creating product.", error)
     }
 }
-const addProduct = asyncHandler(async (req,res)=>{ 
+
+exports.addProduct = async (req,res)=>{ 
 
     try {
-        const products = await addProducts(req.body)
-        res.status(201).json({message: "Product added successfully.", product:products})
+        console.log("Request Body:", req.body);
+        const saveProducts = await createProducts(req.body)
+        res.status(201).json({message: "Product created successfully.", saveProducts})
     }catch(error){
-        res.status(500).json({error: "Failed to add product."})
+        res.status(500).json({error: "Failed to create product."})
         
     }
-})
-
+}
 
 //find product by Id
 
@@ -36,7 +46,7 @@ async function findProductById(productId){
     }
 }
 
-const getProductById = asyncHandler(async (req, res)=>{
+exports.getProductById = async (req, res)=>{
     try {
         const products = await findProductById(req.params.productId)
         if(products.length != 0){
@@ -47,7 +57,7 @@ const getProductById = asyncHandler(async (req, res)=>{
     } catch (error) {
         res.status(500).json({error: "Failed to fetch products."})
     }
-})
+}
 
 
 //find all products
@@ -60,18 +70,20 @@ async function findAllProducts(){
     }
 }
 
-const getProducts = asyncHandler(async (req, res)=>{
+exports.getProducts = async (req, res) => {
     try {
-        const products = await findAllProducts()
-        if(products.length != 0){
-            res.json(products)
-        }else{
-            res.status(404).json({error: "No product found."})
-        }
+      const products = await findAllProducts();
+      if (products.length !== 0) {
+        res.json({ data: { products } });
+      } else {
+        res.status(404).json({ error: "No products found" });
+      }
     } catch (error) {
-        res.status(500).json({error: "Failed to fetch products."})
+      res
+        .status(500)
+        .json({ error: "Failed to fetch products" });
     }
-})
+  }
 
 //update product
 async function updateProduct (productId, dataToUpdate){
@@ -83,7 +95,7 @@ async function updateProduct (productId, dataToUpdate){
     }
 }
 
-const updateProductItemById = asyncHandler( async(req,res)=>{
+exports.updateProductItemById =  async(req,res)=>{
     try{
         const products = await updateProduct(req.params.productId, req.body)
         if(products){
@@ -94,7 +106,7 @@ const updateProductItemById = asyncHandler( async(req,res)=>{
     }catch(error){
         res.status(500).json({error: "Failed to update products."})
     }
-})
+}
 
 //  delete product
 async function deleteProducts(productId){
@@ -105,7 +117,7 @@ async function deleteProducts(productId){
        console.log(error) 
     }
 }
-const deleteProduct = asyncHandler(async (req,res)=>{
+exports.deleteProduct = async (req,res)=>{
     try {
         const deletedProduct = await deleteProducts(req.params.productId)
         if(deletedProduct){
@@ -116,7 +128,6 @@ const deleteProduct = asyncHandler(async (req,res)=>{
     } catch (error) {
         res.status(500).json({error: "Failed to delete Product."})
     }
-})
+}
 
 
-module.exports = {addProduct, getProductById, getProducts, updateProductItemById, deleteProduct }

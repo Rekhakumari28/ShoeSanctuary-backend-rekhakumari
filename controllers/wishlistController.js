@@ -2,70 +2,98 @@ const asyncHandler = require('express-async-handler')
 
 const Wishlist = require('../models/wishlist.model')
 
-//add to wishlist 
-async function addProductToWishlist (newProduct){
-    try {
-        const wishlist = new Wishlist(newProduct)
-        const savedWishlist = await wishlist.save()
-        return savedWishlist
-    } catch (error) {
-        console.log('An error occured while adding product.', error)        
-    }
-}
 
-const addToWishlist = asyncHandler(async (req, res)=>{
-    try {
-        const wishlist = await addProductToWishlist(req.body)
-        res.status(201).json({message: 'Product added to wishlist.', wishlist: wishlist})
-    } catch (error) {
-        res.status(500).json({error: "Failed to add product."})
+//add to wishlist 
+exports.addToWishlist = async (req, res) => {
+    const { userId } = req.params;
+    const { productId, title, price,  images} = req.body;
+  
+    if ( !userId || !productId || !title || !price ||images ) {
+      return res.status(400).json({ message: "All fields are required" });
     }
-})
+     
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ message: "Invalid user ID" });
+    }
+  
+    try {
+      let wishlist = await Wishlist.findOne({ userId });
+  
+      if (!wishlist) {
+        wishlist = new Wishlist({ userId, items: [] });
+      }
+  
+      const itemExists = wishlist.items.some(
+        (item) => item.productId === productId
+      );
+      if (itemExists) {
+        return res.status(400).json({ message: "Item already in wishlist" });
+      }
+  
+      wishlist.items.push({ productId, title, price,  images });
+  
+      await wishlist.save();
+  
+      res.status(201).json({ message: "Item added to wishlist", wishlist });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Server error", error: err.message });
+    }
+  };
+
+  exports.removeItem = async (req, res) => {
+    const { userId, productId } = req.params;
+  
+    if (!userId || !productId) {
+      return res
+        .status(400)
+        .json({ message: "userId and productId are required" });
+    }
+  
+    try {
+      const wishlist = await Wishlist.findOne({ userId });
+  
+      if (!wishlist) {
+        return res.status(404).json({ message: "Wishlist not found" });
+      }
+  
+      const itemIndex = wishlist.items.findIndex(
+        (item) => item.productId === parseInt(productId)
+      );
+  
+      if (itemIndex === -1) {
+        return res.status(404).json({ message: "Item not found in wishlist" });
+      }
+  
+      wishlist.items.splice(itemIndex, 1);
+      await wishlist.save();
+  
+      res.status(200).json({ message: "Item removed from wishlist", wishlist });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Server error", error: err.message });
+    }
+  };
 
 //get wishlist
-async function getWishlistProduct(){
+
+exports.getWishlist = async (req,res)=>{
+    const { userId } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    return res.status(400).json({ message: "Invalid user ID" });
+  }
+
     try {
-        const wishlist = await Wishlist.find().populate("product")
-        return wishlist
+        const wishlist = await Wishlist.findOne(userId)
+        if(!wishlist){
+            res.status(404).json({error: "No wishlist found."})
+        }
+
+        res.status(200).json(wishlist)
+
     } catch (error) {
-        console.log("An error occured fetching products.")        
+        res.status(500).json({error: "Internel server error."})  
     }
 }
 
-const getWishlist = asyncHandler( async (req,res)=>{
-    try {
-        const wishlist = await getWishlistProduct()
-        if(wishlist.length !=0){
-            res.json(wishlist)
-        }else{
-            res.status(404).json({error: "No product found."})
-        }
-    } catch (error) {
-        res.status(500).json({error: "Failed to fetch products."})  
-    }
-})
-
-//delete product
-async function deleteProductFromWishlist(productId){
-    try {
-        const deletedProduct = await Wishlist.findByIdAndDelete(productId) 
-        return deletedProduct
-    } catch (error) {
-       console.log(error) 
-    }
-}
-
-const deleteFromWishlist = asyncHandler( async (req,res)=>{
-    try {
-        const deletedProduct = await deleteProductFromWishlist(req.params.productId)
-        if(deletedProduct){
-            res.status(200).json({message: "Product Deleted Successfully."})
-        }else{
-            res.status(404).json({error: "Product not found"})
-        }
-    } catch (error) {
-        res.status(500).json({error: "Failed to delete Product."})
-    }
-})
-
-module.exports = {addToWishlist, getWishlist, deleteFromWishlist}

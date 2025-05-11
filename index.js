@@ -17,33 +17,32 @@ app.use(express.json())
 initializeDatabase();
 
 app.get("/", (req,res)=>{
-    res.send("Hello Express")
+    res.send("ShoeSanctuary Backend.")
 })
 
 // import router
 const productRouter = require('./Routers/productsRoutes')
 const categoryRouter = require('./Routers/categoryRoutes')
-const orderItemRouter = require('./Routers/orderItemRoutes')
-const addressRouter = require('./Routers/addressRoutes')
 const wishlistRouter = require('./Routers/wishlistRoutes')
-const userRouter = require('./Routers/userRoutes')
 const cartRouter = require('./Routers/cartRoutes')
-const loginRegisterRouter = require('./Routers/authRoutes')
-const orderHistoryRouter = require("./Routers/orderHistoryRoutes")
+const addressRouter = require('./Routers/addressRoutes')
+const userRouter = require('./Routers/userRoutes')
+const orderRouter = require('./Routers/orderItemRoutes')
+
 
 //  routes
 app.use('/api/products' , productRouter)
 app.use('/api/categories', categoryRouter)
-app.use('/api/orderItems', orderItemRouter)
-app.use('/api/addresses',addressRouter)
-app.use('/api/wishlists',wishlistRouter)
-app.use('/api/users',userRouter)
-app.use('/api/carts',cartRouter)
-app.use('/api', loginRegisterRouter)
-app.use("/api/cartHistory", orderHistoryRouter)
+app.use('/api/wishlist',wishlistRouter)
+app.use('/api/cart',cartRouter)
+app.use('/api/address',addressRouter)
+app.use('/api/user',userRouter)
+app.use('/api/orders', orderRouter)
+
+
 
 //port
-const PORT = 3000
+const PORT = 3000 || process.env.PORT
 app.listen(PORT,()=>{
     console.log('Server is running on port:', PORT)
 })

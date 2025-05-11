@@ -1,12 +1,13 @@
-
+const authMiddleware = require("../middleware/authMiddleware.js")
 const express = require('express')
 const router = express.Router()
 
-const {addNewAddress, getAddress, updateAddressById , deleteAddressById} = require('../controllers/addressController')
+const addressController = require('../controllers/addressController')
 
-router.post("/", addNewAddress)
-router.get("/", getAddress)
-router.post('/:addressId', updateAddressById)
-router.delete("/:addressId", deleteAddressById)
+router.post("/:userId/add",authMiddleware ,addressController.addAddress)
+router.get("/:userId/all-address",authMiddleware , addressController.getAllAddress)
+router.get("/:userId/all-address/:addressId" ,authMiddleware ,addressController.getAddressById );
+router.post('/:userId/all-address/:addressId',authMiddleware , addressController.updateAddressById)
+router.delete("/:userId/all-address/:addressId" ,authMiddleware , addressController.deleteAddressById)
 
 module.exports = router

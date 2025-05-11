@@ -1,41 +1,22 @@
 const mongoose = require("mongoose");
 
-const orderItemSchem = new mongoose.Schema({
-  quantity: {
-    type: Number,
-    required: true,
-    default: 1
-  },
-  product: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Product",
-  },
-});
-
 const cartSchema = new mongoose.Schema(
   {
-    orderItems: [orderItemSchem],
-
-    shippingAddress: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Address",
-      default: "24/126, new adarsh colony, gulabpura, Rajasthan, India, 311021",
-    },
-
-    totalPrice: {
-      type: Number,
-      required: true,
-      default: 0,
-    },
-    user: {
+    userId: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
-      default: "Rekha Kumari",
+      required: true,
     },
-    dateOrdered: {
-      type: Date,
-      default: Date.now,
-    },
+    products: [
+      {
+        productId: { type: Number, required: true },
+      title: { type: String, required: true },
+      price: { type: Number, required: true },
+      quantity: { type: Number, default: 1 },
+      images: [{ type: String }],
+      addedAt: { type: Date, default: Date.now },
+    }
+  ]
   },
   { timestamps: true }
 );

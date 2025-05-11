@@ -1,121 +1,109 @@
-const asyncHandler = require('express-async-handler')
-
+const mongoose = require("mongoose");
 const Cart = require('../models/cart.model')
 
-
 //add cart
-async function createCart(newCart){
+
+exports.addToCart = async(req, res)=>{
+    const {userId} = req.params
+    const {productId, title, price, quantity, images} = req.body
+
+    // if(!productId, !title || !price || !quantity || !images){
+    //     return res.status(400).json({ message: "All fields required" });
+    // }
+
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({ message: "Invalid user ID" });
+      }   
+
     try {
-        const cart = new Cart(newCart)
-        const savedCart = await cart.save()
-        return savedCart
+        let cart = await Cart.findOne({userId})
+        if(!cart){
+            cart = new Cart({ userId, products: [] });
+        }
+
+        const itemIndex = cart.products.findIndex(
+            (item) => item.productId === parseInt(productId)
+          );
+          if(itemIndex > -1){
+            cart.products[itemIndex].quantity += quantity || 1;
+          }else{
+            cart.products.push({  productId: parseInt(productId), title, price, quantity: quantity || 1, images   })
+          }
+
+       await cart.save()
+        res.status(201).json({message:"Item added to cart", cart})
     } catch (error) {
-    console.log("An error occured while creating cart.", error)        
+        res.status(500).json({error: "Internal server error.", error:error.message})
     }
 }
- 
-const addToCart = asyncHandler(async(req, res)=>{
-    try {
-        const cart = await createCart(req.body)
-        res.json(cart)
-    } catch (error) {
-        res.status(500).json({error: "No order items."})
-    }
-})
 
+//delete product from cart
+exports.removeProductFromCart =  async (req,res)=>{
+    const { userId, productId } = req.params;
+    if(!userId || !productId){
+        return res.status(400).json({ message: "All fields required" });
+    }
+    try {
+        const cart = await Cart.findOne({userId})
+        if(!cart){
+            res.status(404).json({error: "cart not found"})
+        }
+        
+        cart.products = cart.products.filter((item)=>item.productId !== parseInt(productId))
+        await cart.save();
+        res.status(200).json({message:"Product is removed from cart.", cart})
+
+    } catch (error) {
+        res.status(500).json({error: "Internal server error.", error })
+    }
+}
 
 //find all data
-async function findAllCart(){
+
+exports.getAllCart = async(req,res)=>{
+    const {userId} = req.params
+    if(!userId){
+        return res.status(400).json({error:"User Id is missing."})
+    }
     try {
-        const cart = await Cart.find().populate("orderItems.product").populate("shippingAddress").populate('user').exec()
-        return cart
+        const cart = await Cart.findOne({userId})
+        if(!cart){
+            res.status(404).json({error: "No cart found."})            
+        }
+        res.status(200).json(cart)
     } catch (error) {
-        console.log(error)
+        res.status(500).json({error: "Failed to fetch cart.", error})
     }
 }
-
-const getAllCart = asyncHandler(async(req,res)=>{
-    try {
-        const cart = await findAllCart()
-        if(cart.length != 0){
-            res.json(cart)
-        }else{
-            res.status(404).json({error: "No cart found."})
-        }
-    } catch (error) {
-        res.status(500).json({error: "Failed to fetch cart."})
-    }
-})
-
-//find by user
-
-async function findCartByUser (user){
-    try {
-        const cart = await Cart.findOne({user : user}).populate("orderItems.product").populate("shippingAddress").populate('user').exec()
-        return cart
-    } catch (error) {
-        console.log('An error occured finding user cart.', error)   
-    }
-}
-
-const getCartByUser = asyncHandler (async (req, res)=>{
-    try {
-        const cart = await findCartByUser(req.params.user)
-        if(cart){
-            res.json(cart)
-        }else{
-            res.status(404).json({error: "User's cart not found."})
-        }
-    } catch (error) {
-        res.status(500).json({error: "Failed to fetch user cart."})       
-    }
-})
 
 //update cart
 
-async function updateCart (cartId, dataToUpdate){
-    try {
-        const cart = await Cart.findByIdAndUpdate(cartId, dataToUpdate, {new: true})
-        return cart
-    } catch (error) {
-        console.log("Error in updating cart",error)        
+exports.updateItemQuantity =  async(req,res)=>{
+    const { userId, productId } = req.params;
+    const { quantity } = req.body;
+  
+    if (!userId || !productId || !quantity) {
+      return res.status(400).json({ message: "All field required." });
     }
-}
 
-const updatCartById = asyncHandler( async(req,res)=>{
-    try{
-        const cart = await updateCart(req.params.cartId, req.body)
-        if(cart){
-             res.status(200).json({message:"cart updated successfully.", cart: cart})
-        }else{
-            res.status(404).json({error: "cart not found"})
+    try {
+        const cart = await Cart.findOne({userId})
+        if(!cart){
+            res.status(404).json({error: "cart not found"})           
         }
+        const itemIndex  = cart.products.findIndex((item)=>item.productId === parseInt(productId))
+
+        if(itemIndex === -1){
+            return res.status(404).json({error:"Item is not in cart."})
+        }
+
+        cart.products[itemIndex].quantity = quantity
+        await cart.save()
+        res.status(200).json({message:"cart item quantity updated successfully.", cart: cart})
     }catch(error){
         res.status(500).json({error: "Failed to update cart."})
     }
-})
-
-//delete cart
-async function deleteCart(cartId){
-    try {
-        const deletedCart = await Cart.findByIdAndDelete(cartId) 
-        return deletedCart
-    } catch (error) {
-       console.log(error) 
-    }
 }
 
-const removeCart = asyncHandler( async (req,res)=>{
-    try {
-        const deletedCart = await deleteCart(req.params.cartId)
-        if(deletedCart){
-            res.status(200).json({message: "cart Deleted Successfully."})
-        }else{
-            res.status(404).json({error: "cart not found"})
-        }
-    } catch (error) {
-        res.status(500).json({error: "Failed to delete cart."})
-    }
-})
 
-module.exports = {addToCart, getAllCart , getCartByUser, removeCart, updatCartById}
+
