@@ -8,7 +8,7 @@ exports.addToWishlist = async (req, res) => {
     const { userId } = req.params;
     const { productId, title, price,  images} = req.body;
   
-    if ( !userId || !productId || !title || !price ||images ) {
+    if (  !productId || !title || !price ||images ) {
       return res.status(400).json({ message: "All fields are required" });
     }
      

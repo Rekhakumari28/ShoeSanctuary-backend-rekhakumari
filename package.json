@@ -7,9 +7,9 @@
     "dev": "node index.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "rekha",
   "license": "ISC",
-  "description": "",
+  "description": "A backend APIs for shoeSanctuary products and categories.",
   "dependencies": {
     "bcrypt": "^5.1.1",
     "bcryptjs": "^3.0.2",
