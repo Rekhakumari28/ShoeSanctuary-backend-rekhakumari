@@ -3,31 +3,32 @@ const Cart = require('../models/cart.model')
 
 //add cart
 
-exports.addToCart = async(req, res)=>{
-    const {userId} = req.params
-    const {productId, title, price, quantity, images} = req.body
-
-    // if(!productId, !title || !price || !quantity || !images){
-    //     return res.status(400).json({ message: "All fields required" });
-    // }
-
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-        return res.status(400).json({ message: "Invalid user ID" });
-      }   
-
+exports.addToCart = async(req, res)=>{  
     try {
+        const {userId} = req.params
+        const {productId, title, price, quantity, images} = req.body
+    
+        if (  !productId && !title && !quantity && !price && images ) {
+            return res.status(400).json({ message: "All fields are required" });
+          }
+    
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({ message: "Invalid user ID" });
+          }   
+    
         let cart = await Cart.findOne({userId})
+
         if(!cart){
-            cart = new Cart({ userId, products: [] });
+            cart = new Cart({ userId, products: [{productId, title, price, quantity, images}] });
         }
 
         const itemIndex = cart.products.findIndex(
-            (item) => item.productId === parseInt(productId)
+            (item) => item.productId === productId
           );
           if(itemIndex > -1){
             cart.products[itemIndex].quantity += quantity || 1;
           }else{
-            cart.products.push({  productId: parseInt(productId), title, price, quantity: quantity || 1, images   })
+            cart.products.push({  productId, title, price, quantity: quantity || 1, images   })
           }
 
        await cart.save()

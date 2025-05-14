@@ -7,13 +7,13 @@ const jwt = require("jsonwebtoken");
 
 exports.signup = async(req, res)=>{
     try {
-        const {username, email, password}= req.body
+        const {name, email, password}= req.body
         const user = await User.findOne({email})
         if(user){
             res.status(409).json({error:"User already registerd. please login.", success: false}) 
         }
         const hashedPassword = await bcrypt.hash(password, 10)
-        const newUser = new User({ username, email, password: hashedPassword });
+        const newUser = new User({ name, email, password: hashedPassword });
         const saveUser = await newUser.save()
         res.status(201).json({message: "Registration Successfully.", user: saveUser})
     } catch (error) {
@@ -52,7 +52,7 @@ exports.login = async (req, res) => {
         success: true,
         jwtToken,
         email,
-        username: user.username,
+        name: user.name,
         user: user
       });
     } catch (err) {
@@ -66,26 +66,28 @@ exports.login = async (req, res) => {
 
 exports.getUserById= async (req, res)=>{
     try {
-        const userId = req.params.userId;
-
+      const userId = req.params.userId;
+console.log(userId, "userId")
     if (!userId) {
       return res.status(400).json({ error: "Invalid user ID" });
-    }
-
-        const user = await User.findById(userId)
-        if(user){
+    }    
+        const user = await User.findById({_id: userId})
+      console.log(user, "user")
+        if(!user){
             res.status(404).json({error: "User not found."})
         }
-        res.status(200).json(user)
+      
+        res.status(200).json({message: "User data: ",user})
+
     } catch (error) {
-        res.status(500).json({error: "Failed to fetch user."})
+        res.status(500).json({error: "Failed to fetch user.", error})
     }
 }
 
 // Update user by userId
 exports.updateUser = async (req, res) => {
     try {
-      const { username } = req.body;
+      const { name } = req.body;
       const userId = req.params.userId;
   
       if (!userId) {
@@ -94,14 +96,14 @@ exports.updateUser = async (req, res) => {
   
       const user = await User.findByIdAndUpdate(
         userId,
-        { username},
+        { name},
         { new: true }
       );
   
       if (!user) return res.status(404).json({ message: "User not found" });
       res.status(200).json(user);
     } catch (error) {
-      console.error(error); // Log the error for debugging
+      console.error(error); 
       res.status(500).json({ error: error.message });
     }
   };
@@ -109,6 +111,7 @@ exports.updateUser = async (req, res) => {
   
   // Delete a user
   exports.deleteUser = async (req, res) => {
+    
     try {
       const userId = req.params.userId;
   
@@ -123,8 +126,7 @@ exports.updateUser = async (req, res) => {
       res
         .status(200)
         .json({ message: "User deleted successfully" });
-    } catch (error) {
-     
+    } catch (error) {     
       res.status(500).json({ error: error.message });
     }
   };

@@ -1,36 +1,37 @@
-const asyncHandler = require('express-async-handler')
-
+const { default: mongoose } = require('mongoose');
 const Wishlist = require('../models/wishlist.model')
 
 
 //add to wishlist 
-exports.addToWishlist = async (req, res) => {
-    const { userId } = req.params;
-    const { productId, title, price,  images} = req.body;
-  
-    if (  !productId || !title || !price ||images ) {
-      return res.status(400).json({ message: "All fields are required" });
-    }
-     
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      return res.status(400).json({ message: "Invalid user ID" });
-    }
+exports.addToWishlist = async (req, res) => {   
   
     try {
+      const { userId } = req.params;
+   
+      const { productId, title, price,  images} = req.body;
+    
+      if (  !productId && !title && !price && images ) {
+        return res.status(400).json({ message: "All fields are required" });
+      }
+       
+      if (!mongoose.Types.ObjectId.isValid(userId)) {
+        return res.status(400).json({ message: "Invalid user ID" });
+      }
+      
       let wishlist = await Wishlist.findOne({ userId });
   
       if (!wishlist) {
-        wishlist = new Wishlist({ userId, items: [] });
+        wishlist = new Wishlist({ userId, products: [{ productId, title, price,  images}] });
       }
   
-      const itemExists = wishlist.items.some(
+      const itemExists = wishlist.products.some(
         (item) => item.productId === productId
       );
       if (itemExists) {
         return res.status(400).json({ message: "Item already in wishlist" });
       }
   
-      wishlist.items.push({ productId, title, price,  images });
+      wishlist.products.push({ productId, title, price,  images });
   
       await wishlist.save();
   
@@ -41,31 +42,31 @@ exports.addToWishlist = async (req, res) => {
     }
   };
 
-  exports.removeItem = async (req, res) => {
-    const { userId, productId } = req.params;
+  exports.removeItem = async (req, res) => {    
+  
+    try {
+      const { userId, productId } = req.params;
   
     if (!userId || !productId) {
       return res
         .status(400)
         .json({ message: "userId and productId are required" });
     }
-  
-    try {
       const wishlist = await Wishlist.findOne({ userId });
   
       if (!wishlist) {
         return res.status(404).json({ message: "Wishlist not found" });
       }
   
-      const itemIndex = wishlist.items.findIndex(
-        (item) => item.productId === parseInt(productId)
+      const itemIndex = wishlist.products.findIndex(
+        (item) => item.productId === productId
       );
   
       if (itemIndex === -1) {
-        return res.status(404).json({ message: "Item not found in wishlist" });
+        return res.status(404).json({ message: "Item not found in wishlist" ,itemIndex});
       }
   
-      wishlist.items.splice(itemIndex, 1);
+      wishlist.products.splice(itemIndex, 1);
       await wishlist.save();
   
       res.status(200).json({ message: "Item removed from wishlist", wishlist });
@@ -77,23 +78,19 @@ exports.addToWishlist = async (req, res) => {
 
 //get wishlist
 
-exports.getWishlist = async (req,res)=>{
-    const { userId } = req.params;
+exports.getWishlist = async (req,res)=>{  
+    try { 
+      const { userId } = req.params;  
+      const wishlist = await Wishlist.findOne({userId})
 
-  if (!mongoose.Types.ObjectId.isValid(userId)) {
-    return res.status(400).json({ message: "Invalid user ID" });
-  }
-
-    try {
-        const wishlist = await Wishlist.findOne(userId)
-        if(!wishlist){
+        if(!wishlist){         
             res.status(404).json({error: "No wishlist found."})
         }
 
-        res.status(200).json(wishlist)
+        res.status(200).json(wishlist.products)
 
     } catch (error) {
-        res.status(500).json({error: "Internel server error."})  
+        res.status(500).json({error: "Failed to fetch wishlist."})  
     }
 }
 
