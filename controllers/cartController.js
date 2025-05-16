@@ -50,7 +50,7 @@ exports.removeProductFromCart =  async (req,res)=>{
             res.status(404).json({error: "cart not found"})
         }
         
-        cart.products = cart.products.filter((item)=>item.productId !== parseInt(productId))
+        cart.products = cart.products.filter((item)=>item.productId !== productId)
         await cart.save();
         res.status(200).json({message:"Product is removed from cart.", cart})
 
@@ -92,7 +92,7 @@ exports.updateItemQuantity =  async(req,res)=>{
         if(!cart){
             res.status(404).json({error: "cart not found"})           
         }
-        const itemIndex  = cart.products.findIndex((item)=>item.productId === parseInt(productId))
+        const itemIndex  = cart.products.findIndex((item)=>item.productId === productId)
 
         if(itemIndex === -1){
             return res.status(404).json({error:"Item is not in cart."})
