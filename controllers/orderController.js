@@ -31,20 +31,11 @@ exports.placeOrder = async (req, res) => {
 
 exports.getOrderHistory = async (req, res) => {
   try {
-    const { userId } = req.params;
-
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      return res.status(400).json({ error: "Invalid user ID" });
-    }
-
-    const orders = await Order.find({ userId })
-      .sort({ orderDate: -1 })
-      .populate("cartItems");
+       const orders = await Order.find().populate("cartItems").populate("shippingAddress")
 
     if (!orders.length) {
       return res.status(404).json({ error: "No orders found" });
     }
-
     res.status(200).json(orders);
   } catch (error) {
     res
@@ -58,45 +49,8 @@ exports.getOrderHistory = async (req, res) => {
 
 exports.getOrderDetails = async (req, res) => {
   try {
-    const { orderId, userId } = req.params;
-
-    console.log(`Request received for order ${orderId}, user ${userId}`);
-
-    if (!mongoose.Types.ObjectId.isValid(userId)) {
-      console.error("Invalid user ID:", userId);
-      return res.status(400).json({ error: "Invalid user ID" });
-    }
-    if (!mongoose.Types.ObjectId.isValid(orderId)) {
-      console.error("Invalid order ID:", orderId);
-      return res.status(400).json({ error: "Invalid order ID" });
-    }
-
-    const order = await Order.findOne({
-      _id: orderId,
-      userId,
-    }).populate("cartItems")
-
-    console.log("Found order:", order);
-
-    if (!order) {
-      console.error("Order not found");
-      return res.status(404).json({ error: "Order not found for this user" });
-    }
-
-    const productsWithDetails = await Promise.all(
-      order.products.map(async (product) => {
-        const productDetails = await Product.findOne({
-          productId: product.productId,
-        });
-        console.log(`Product ${product.productId} details:`, productDetails);
-        return {
-          ...product.toObject(),
-          productDetails,
-        };
-      })
-    );
-
-    order.products = productsWithDetails;
+    const {objectId} = req.params
+ const order = await Order.findOne({objectId: objectId}).populate("cartItems")
     res.status(200).json(order);
   } catch (error) {
     console.error("Error in getOrderDetails:", error);
