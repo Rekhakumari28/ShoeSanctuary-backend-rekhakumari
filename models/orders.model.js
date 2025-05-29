@@ -7,7 +7,7 @@ const orderSchema = new mongoose.Schema({
  },
  totalAmount: { type: Number, required: true },
  orderDate: { type: Date, default: Date.now },
-  shippingAddress:{ type: String }
+  shippingAddress:{ type: mongoose.Schema.Types.ObjectId,  ref: "Address",  }
   
 });
 const Order= mongoose.model("Order", orderSchema);
