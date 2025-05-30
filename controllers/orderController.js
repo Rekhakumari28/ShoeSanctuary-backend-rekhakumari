@@ -50,7 +50,7 @@ exports.getOrderHistory = async (req, res) => {
 exports.getOrderDetails = async (req, res) => {
   try {
     const {objectId} = req.params
- const order = await Order.findOne({objectId: objectId}).populate("cartItems")
+ const order = await Order.findOne({objectId: objectId}).populate("cartItems").populate("shippingAddress")
     res.status(200).json(order);
   } catch (error) {
     console.error("Error in getOrderDetails:", error);
